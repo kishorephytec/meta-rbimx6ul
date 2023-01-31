@@ -1,0 +1,48 @@
+From 3992a94123df03a0c9bea2f88b2f8c2378b5add4 Mon Sep 17 00:00:00 2001
+From: khaleel <khaleel.s@phytec.in>
+Date: Fri, 23 Dec 2022 18:44:10 +0530
+Subject: [PATCH 4/6] Add SIERRAWIRELESS wp76xx 4g module to RB-imx6ul
+
+Signed-off-by: khaleel <khaleel.s@phytec.in>
+---
+ arch/arm/configs/imx6_Rb_defconfig | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/arch/arm/configs/imx6_Rb_defconfig b/arch/arm/configs/imx6_Rb_defconfig
+index 3fd2f17..2211418 100644
+--- a/arch/arm/configs/imx6_Rb_defconfig
++++ b/arch/arm/configs/imx6_Rb_defconfig
+@@ -142,6 +142,8 @@ CONFIG_USB_USBNET=y
+ CONFIG_USB_NET_CDC_EEM=m
+ CONFIG_USB_NET_SMSC95XX=y
+ CONFIG_USB_NET_MCS7830=y
++CONFIG_USB_NET_QMI_WWAN=y
++CONFIG_USB_SIERRA_NET=y
+ CONFIG_BRCMFMAC=m
+ CONFIG_MWIFIEX=m
+ CONFIG_MWIFIEX_SDIO=m
+@@ -307,15 +309,18 @@ CONFIG_USB=y
+ CONFIG_USB_ANNOUNCE_NEW_DEVICES=y
+ CONFIG_USB_EHCI_HCD=y
+ CONFIG_USB_EHCI_MXC=y
+-CONFIG_USB_ACM=m
++CONFIG_USB_ACM=y
+ CONFIG_USB_STORAGE=y
+ CONFIG_USB_CHIPIDEA=y
+ CONFIG_USB_CHIPIDEA_UDC=y
+ CONFIG_USB_CHIPIDEA_HOST=y
+-CONFIG_USB_SERIAL=m
++CONFIG_USB_SERIAL=y
+ CONFIG_USB_SERIAL_GENERIC=y
+ CONFIG_USB_SERIAL_FTDI_SIO=m
+-CONFIG_USB_SERIAL_OPTION=m
++CONFIG_USB_SERIAL_QCAUX=y
++CONFIG_USB_SERIAL_QUALCOMM=y
++CONFIG_USB_SERIAL_SIERRAWIRELESS=y
++CONFIG_USB_SERIAL_OPTION=y
+ CONFIG_USB_TEST=m
+ CONFIG_USB_EHSET_TEST_FIXTURE=m
+ CONFIG_NOP_USB_XCEIV=y
+-- 
+2.7.4
+

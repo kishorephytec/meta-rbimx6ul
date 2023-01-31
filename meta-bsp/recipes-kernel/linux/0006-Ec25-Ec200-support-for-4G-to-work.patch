@@ -1,0 +1,102 @@
+From 66a4989e4d28e0169a79f5bc213149d6184a7204 Mon Sep 17 00:00:00 2001
+From: khaleel <khaleel.s@phytec.in>
+Date: Wed, 18 Jan 2023 11:41:34 +0530
+Subject: [PATCH 6/6] Ec25/Ec200 : support for 4G to work
+
+serail driver requirs few changes for EC25/EC200
+
+PPP configuration in defconfig
+
+Signed-off-by: khaleel <khaleel.s@phytec.in>
+---
+ arch/arm/configs/imx6_Rb_defconfig | 10 ++++++++++
+ drivers/usb/serial/option.c        | 17 ++++++++++++++++-
+ 2 files changed, 26 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/configs/imx6_Rb_defconfig b/arch/arm/configs/imx6_Rb_defconfig
+index 79a14f5..666549b 100644
+--- a/arch/arm/configs/imx6_Rb_defconfig
++++ b/arch/arm/configs/imx6_Rb_defconfig
+@@ -134,6 +134,15 @@ CONFIG_SMSC911X=y
+ # CONFIG_NET_VENDOR_STMICRO is not set
+ CONFIG_MICREL_PHY=y
+ CONFIG_AT803X_PHY=y
++CONFIG_PPP=y
++CONFIG_PPP_BSDCOMP=y
++CONFIG_PPP_DEFLATE=y
++CONFIG_PPP_FILTER=y
++CONFIG_PPP_MPPE=y
++CONFIG_PPP_MULTILINK=y
++CONFIG_PPPOE=y
++CONFIG_PPP_ASYNC=y
++CONFIG_PPP_SYNC_TTY=y
+ CONFIG_USB_PEGASUS=m
+ CONFIG_USB_RTL8150=m
+ CONFIG_USB_RTL8152=y
+@@ -142,6 +151,7 @@ CONFIG_USB_USBNET=y
+ CONFIG_USB_NET_CDC_EEM=m
+ CONFIG_USB_NET_SMSC95XX=y
+ CONFIG_USB_NET_MCS7830=y
++CONFIG_USB_NET_RNDIS_HOST=y
+ CONFIG_USB_NET_QMI_WWAN=y
+ CONFIG_USB_SIERRA_NET=y
+ CONFIG_BRCMFMAC=m
+diff --git a/drivers/usb/serial/option.c b/drivers/usb/serial/option.c
+index c735671..2ce7e7a 100644
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -585,6 +585,8 @@ static void option_instat_callback(struct urb *urb);
+ 
+ 
+ static const struct usb_device_id option_ids[] = {
++	{ USB_DEVICE(0x2C7C, 0x6026) },
++	{ USB_DEVICE(0x2C7C, 0x6000) },
+ 	{ USB_DEVICE(OPTION_VENDOR_ID, OPTION_PRODUCT_COLT) },
+ 	{ USB_DEVICE(OPTION_VENDOR_ID, OPTION_PRODUCT_RICOLA) },
+ 	{ USB_DEVICE(OPTION_VENDOR_ID, OPTION_PRODUCT_RICOLA_LIGHT) },
+@@ -1859,7 +1861,7 @@ static const struct usb_device_id option_ids[] = {
+ 	{ USB_DEVICE(QISDA_VENDOR_ID, QISDA_PRODUCT_H20_4518) },
+ 	{ USB_DEVICE(QISDA_VENDOR_ID, QISDA_PRODUCT_H20_4519) },
+ 	{ USB_DEVICE(TOSHIBA_VENDOR_ID, TOSHIBA_PRODUCT_G450) },
+-	{ USB_DEVICE(TOSHIBA_VENDOR_ID, TOSHIBA_PRODUCT_HSDPA_MINICARD ) }, /* Toshiba 3G HSDPA == Novatel Expedite EU870D MiniCard */
++	{ USB_DEVICE(TOSHIBA_VENDOR_ID, TOSHIBA_PRODUCT_HSDPA_MINICARD) }, /* Toshiba 3G HSDPA == Novatel Expedite EU870D MiniCard */
+ 	{ USB_DEVICE(ALINK_VENDOR_ID, 0x9000) },
+ 	{ USB_DEVICE(ALINK_VENDOR_ID, ALINK_PRODUCT_PH300) },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(ALINK_VENDOR_ID, ALINK_PRODUCT_3GU, 0xff, 0xff, 0xff) },
+@@ -2105,6 +2107,7 @@ MODULE_DEVICE_TABLE(usb, option_ids);
+ /* The card has three separate interfaces, which the serial driver
+  * recognizes separately, thus num_port=1.
+  */
++/* Helper functions used by option_setup_urbs */
+ 
+ static struct usb_serial_driver option_1port_device = {
+ 	.driver = {
+@@ -2133,6 +2136,9 @@ static struct usb_serial_driver option_1port_device = {
+ #ifdef CONFIG_PM
+ 	.suspend           = usb_wwan_suspend,
+ 	.resume            = usb_wwan_resume,
++#if 1 //Added by Quectel
++	.reset_resume = usb_wwan_resume,
++#endif
+ #endif
+ };
+ 
+@@ -2157,6 +2163,15 @@ static int option_probe(struct usb_serial *serial,
+ 				&serial->interface->cur_altsetting->desc;
+ 	unsigned long device_flags = id->driver_info;
+ 
++#if 1 //Added by Quectel
++	if (serial->dev->descriptor.idVendor == cpu_to_le16(0x2C7C)) {
++		__u16 idProduct = le16_to_cpu(serial->dev->descriptor.idProduct);
++		//Quectel EC200T's interface 0 can be used as USB Network device (ecm, rndis)
++		if (serial->interface->cur_altsetting->desc.bInterfaceClass != 0xFF)
++			return -ENODEV;
++	}
++#endif
++
+ 	/* Never bind to the CD-Rom emulation interface	*/
+ 	if (iface_desc->bInterfaceClass == USB_CLASS_MASS_STORAGE)
+ 		return -ENODEV;
+-- 
+2.7.4
+
