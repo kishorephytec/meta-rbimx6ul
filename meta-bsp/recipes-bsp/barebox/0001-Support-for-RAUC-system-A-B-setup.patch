@@ -1,0 +1,112 @@
+From c74e7eb05b0d65038cc37d69aa8b6d27a49a904e Mon Sep 17 00:00:00 2001
+From: saikrishnagv53 <sai.k@phytec.in>
+Date: Mon, 6 Feb 2023 22:25:06 +0530
+Subject: [PATCH] Support for RAUC system A/B setup
+
+---
+ .../defaultenv-physom-imx6ul-phycore/boot/system0        | 9 +++++++++
+ .../defaultenv-physom-imx6ul-phycore/boot/system1        | 9 +++++++++
+ .../nv/bootchooser.state_prefix                          | 1 +
+ .../nv/bootchooser.system0.boot                          | 1 +
+ .../nv/bootchooser.system0.default_priority              | 1 +
+ .../nv/bootchooser.system1.boot                          | 1 +
+ .../nv/bootchooser.system1.default_priority              | 1 +
+ .../nv/bootchooser.targets                               | 1 +
+ arch/arm/dts/imx6ul-phytec-state.dtsi                    | 1 +
+ 9 files changed, 25 insertions(+)
+ create mode 100644 arch/arm/boards/phytec-som-imx6/defaultenv-physom-imx6ul-phycore/boot/system0
+ create mode 100644 arch/arm/boards/phytec-som-imx6/defaultenv-physom-imx6ul-phycore/boot/system1
+ create mode 100644 arch/arm/boards/phytec-som-imx6/defaultenv-physom-imx6ul-phycore/nv/bootchooser.state_prefix
+ create mode 100644 arch/arm/boards/phytec-som-imx6/defaultenv-physom-imx6ul-phycore/nv/bootchooser.system0.boot
+ create mode 100644 arch/arm/boards/phytec-som-imx6/defaultenv-physom-imx6ul-phycore/nv/bootchooser.system0.default_priority
+ create mode 100644 arch/arm/boards/phytec-som-imx6/defaultenv-physom-imx6ul-phycore/nv/bootchooser.system1.boot
+ create mode 100644 arch/arm/boards/phytec-som-imx6/defaultenv-physom-imx6ul-phycore/nv/bootchooser.system1.default_priority
+ create mode 100644 arch/arm/boards/phytec-som-imx6/defaultenv-physom-imx6ul-phycore/nv/bootchooser.targets
+
+diff --git a/arch/arm/boards/phytec-som-imx6/defaultenv-physom-imx6ul-phycore/boot/system0 b/arch/arm/boards/phytec-som-imx6/defaultenv-physom-imx6ul-phycore/boot/system0
+new file mode 100644
+index 0000000000..996044b330
+--- /dev/null
++++ b/arch/arm/boards/phytec-som-imx6/defaultenv-physom-imx6ul-phycore/boot/system0
+@@ -0,0 +1,9 @@
++#!/bin/sh
++[ ! -e /dev/nand0.root.ubi ] && ubiattach /dev/nand0.root
++ 
++mkdir -p /mnt/nand0.root.ubi.rootfsA
++automount -d /mnt/nand0.root.ubi.rootfsA 'mount nand0.root.ubi.rootfsA'
++ 
++global.bootm.oftree="/mnt/nand0.root.ubi.rootfsA/boot/imx6q-phytec-mira-rdk-nand.dtb"
++global.bootm.image="/mnt/nand0.root.ubi.rootfsA/boot/zImage"
++global.linux.bootargs.dyn.root="root=ubi0:rootfsA ubi.mtd=root rootfstype=ubifs rw"
+diff --git a/arch/arm/boards/phytec-som-imx6/defaultenv-physom-imx6ul-phycore/boot/system1 b/arch/arm/boards/phytec-som-imx6/defaultenv-physom-imx6ul-phycore/boot/system1
+new file mode 100644
+index 0000000000..21474c828f
+--- /dev/null
++++ b/arch/arm/boards/phytec-som-imx6/defaultenv-physom-imx6ul-phycore/boot/system1
+@@ -0,0 +1,9 @@
++#!/bin/sh
++[ ! -e /dev/nand0.root.ubi ] && ubiattach /dev/nand0.root
++ 
++mkdir -p /mnt/nand0.root.ubi.rootfsB
++automount -d /mnt/nand0.root.ubi.rootfsB 'mount nand0.root.ubi.rootfsB'
++ 
++global.bootm.oftree="/mnt/nand0.root.ubi.rootfsB/boot/imx6q-phytec-mira-rdk-nand.dtb"
++global.bootm.image="/mnt/nand0.root.ubi.rootfsB/boot/zImage"
++global.linux.bootargs.dyn.root="root=ubi0:rootfsB ubi.mtd=root rootfstype=ubifs rw"
+diff --git a/arch/arm/boards/phytec-som-imx6/defaultenv-physom-imx6ul-phycore/nv/bootchooser.state_prefix b/arch/arm/boards/phytec-som-imx6/defaultenv-physom-imx6ul-phycore/nv/bootchooser.state_prefix
+new file mode 100644
+index 0000000000..6246412a5c
+--- /dev/null
++++ b/arch/arm/boards/phytec-som-imx6/defaultenv-physom-imx6ul-phycore/nv/bootchooser.state_prefix
+@@ -0,0 +1 @@
++state.bootstate
+diff --git a/arch/arm/boards/phytec-som-imx6/defaultenv-physom-imx6ul-phycore/nv/bootchooser.system0.boot b/arch/arm/boards/phytec-som-imx6/defaultenv-physom-imx6ul-phycore/nv/bootchooser.system0.boot
+new file mode 100644
+index 0000000000..cf27226bda
+--- /dev/null
++++ b/arch/arm/boards/phytec-som-imx6/defaultenv-physom-imx6ul-phycore/nv/bootchooser.system0.boot
+@@ -0,0 +1 @@
++system0
+diff --git a/arch/arm/boards/phytec-som-imx6/defaultenv-physom-imx6ul-phycore/nv/bootchooser.system0.default_priority b/arch/arm/boards/phytec-som-imx6/defaultenv-physom-imx6ul-phycore/nv/bootchooser.system0.default_priority
+new file mode 100644
+index 0000000000..aabe6ec390
+--- /dev/null
++++ b/arch/arm/boards/phytec-som-imx6/defaultenv-physom-imx6ul-phycore/nv/bootchooser.system0.default_priority
+@@ -0,0 +1 @@
++21
+diff --git a/arch/arm/boards/phytec-som-imx6/defaultenv-physom-imx6ul-phycore/nv/bootchooser.system1.boot b/arch/arm/boards/phytec-som-imx6/defaultenv-physom-imx6ul-phycore/nv/bootchooser.system1.boot
+new file mode 100644
+index 0000000000..3c81949c4d
+--- /dev/null
++++ b/arch/arm/boards/phytec-som-imx6/defaultenv-physom-imx6ul-phycore/nv/bootchooser.system1.boot
+@@ -0,0 +1 @@
++system1
+diff --git a/arch/arm/boards/phytec-som-imx6/defaultenv-physom-imx6ul-phycore/nv/bootchooser.system1.default_priority b/arch/arm/boards/phytec-som-imx6/defaultenv-physom-imx6ul-phycore/nv/bootchooser.system1.default_priority
+new file mode 100644
+index 0000000000..209e3ef4b6
+--- /dev/null
++++ b/arch/arm/boards/phytec-som-imx6/defaultenv-physom-imx6ul-phycore/nv/bootchooser.system1.default_priority
+@@ -0,0 +1 @@
++20
+diff --git a/arch/arm/boards/phytec-som-imx6/defaultenv-physom-imx6ul-phycore/nv/bootchooser.targets b/arch/arm/boards/phytec-som-imx6/defaultenv-physom-imx6ul-phycore/nv/bootchooser.targets
+new file mode 100644
+index 0000000000..f0fb14eeaa
+--- /dev/null
++++ b/arch/arm/boards/phytec-som-imx6/defaultenv-physom-imx6ul-phycore/nv/bootchooser.targets
+@@ -0,0 +1 @@
++system0 system1
+diff --git a/arch/arm/dts/imx6ul-phytec-state.dtsi b/arch/arm/dts/imx6ul-phytec-state.dtsi
+index a21cb49f00..7ed1646a50 100644
+--- a/arch/arm/dts/imx6ul-phytec-state.dtsi
++++ b/arch/arm/dts/imx6ul-phytec-state.dtsi
+@@ -69,6 +69,7 @@
+ };
+ 
+ &eeprom {
++    status = "okay";
+ 	partitions {
+ 		compatible = "fixed-partitions";
+ 		#size-cells = <1>;
+-- 
+2.17.1
+
