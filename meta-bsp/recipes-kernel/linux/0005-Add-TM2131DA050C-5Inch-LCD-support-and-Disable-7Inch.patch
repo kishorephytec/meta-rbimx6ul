@@ -1,0 +1,68 @@
+From 42627a7cfa4ac41d164c2f20f79fefa26f891e34 Mon Sep 17 00:00:00 2001
+From: saikrishnagv53 <sai.k@phytec.in>
+Date: Mon, 6 Feb 2023 23:27:55 +0530
+Subject: [PATCH] Add TM2131DA050C 5Inch LCD support and Disable 7Inch LCD
+
+---
+ .../dts/imx6ul-phytec-segin-peb-av-02.dtsi    | 30 +++++++++++++++++--
+ 1 file changed, 28 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/boot/dts/imx6ul-phytec-segin-peb-av-02.dtsi b/arch/arm/boot/dts/imx6ul-phytec-segin-peb-av-02.dtsi
+index 306779c234e5..095b766d4eda 100644
+--- a/arch/arm/boot/dts/imx6ul-phytec-segin-peb-av-02.dtsi
++++ b/arch/arm/boot/dts/imx6ul-phytec-segin-peb-av-02.dtsi
+@@ -38,7 +38,7 @@
+ 		status = "okay";
+ 
+ 		display-timings {
+-			native-mode = <&timing4>;
++			native-mode = <&timing5>;
+ 
+ 			timing0: ETM0700G0EDH6 {
+ 				clock-frequency = <33264000>;
+@@ -115,6 +115,22 @@
+ 				de-active = <1>;
+ 				pixelclk-active = <0>;
+ 			};
++            timing5: TM2131DA050C {
++                clock-frequency = <30919680>;
++                hactive = <800>;
++                vactive = <480>;
++                hback-porch = <88>;
++                hsync-len = <48>;
++                hfront-porch = <40>;
++                vback-porch = <32>;
++                vsync-len = <3>;
++                vfront-porch = <13>;
++                hsync-active = <0>;
++                vsync-active = <0>;
++                de-active = <1>;
++                pixelclk-active = <0>;
++            };
++
+ 		};
+ 	};
+ };
+@@ -131,8 +147,18 @@
+         touchscreen-size-y = <480>;
+         touchscreen-size-x = <800>;
+ 		wakeup-source;
+-		status = "okay";
++		status = "disabled";
+ 	};
++    atmelmxt_touch: atmel_mxt@4a {
++        compatible = "atmel,maxtouch";
++        reg = <0x4a>;
++        pinctrl-names = "default";
++        pinctrl-0 = <&pinctrl_edt_ft5x06>;
++        interrupt-parent = <&gpio5>;
++        interrupts = <9 IRQ_TYPE_EDGE_FALLING>;
++        wakeup-source;
++        status = "okay";
++    };
+ };
+ 
+ &iomuxc {
+-- 
+2.17.1
+
