@@ -1,0 +1,10 @@
+FILESEXTRAPATHS_prepend := "${THISDIR}:"
+
+INTREE_DEFCONFIG = "rbiMx6ul_defconfig"
+COMPATIBLE_MACHINE = "ruggedboard-imx6ul"
+
+SRC_URI += "file://fragment.cfg \
+            file://0001-Add-device-tree-support-for-RB-iMx6ul-in-kernel-4.14.patch \
+	        file://0002-Add-wilc-driver-to-kernel-4.14-source.patch \
+            file://0003-Add-defconfig-for-rb-iMx6ul.patch \
+"
