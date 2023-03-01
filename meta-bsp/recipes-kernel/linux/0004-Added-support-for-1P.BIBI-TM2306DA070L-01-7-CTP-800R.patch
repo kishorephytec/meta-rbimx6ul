@@ -1,0 +1,86 @@
+From 1dc8ded641f9657594ccb10f27a55db794efa607 Mon Sep 17 00:00:00 2001
+From: saikrishna <sai.k@phytec.in>
+Date: Wed, 12 Oct 2022 17:36:22 +0530
+Subject: [PATCH] =?UTF-8?q?Added=20support=20for=201P.BIBI-TM2306DA070L-01?=
+ =?UTF-8?q?=207=E2=80=9D=20CTP=20&=20800RGBX480=2024-Bit=20RGB=20TFT=20Dis?=
+ =?UTF-8?q?play?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ .../dts/imx6ul-phytec-segin-peb-av-02.dtsi    | 31 +++++++++++++++----
+ 1 file changed, 25 insertions(+), 6 deletions(-)
+
+diff --git a/arch/arm/boot/dts/imx6ul-phytec-segin-peb-av-02.dtsi b/arch/arm/boot/dts/imx6ul-phytec-segin-peb-av-02.dtsi
+index 8992c24a6d29..306779c234e5 100644
+--- a/arch/arm/boot/dts/imx6ul-phytec-segin-peb-av-02.dtsi
++++ b/arch/arm/boot/dts/imx6ul-phytec-segin-peb-av-02.dtsi
+@@ -30,15 +30,15 @@
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_lcdif_dat>;
+ 	display = <&display>;
+-	status = "disabled";
++	status = "okay";
+ 
+ 	display: display@di0 {
+ 		bits-per-pixel = <32>;
+ 		bus-width = <18>;
+-		status = "disabled";
++		status = "okay";
+ 
+ 		display-timings {
+-			native-mode = <&timing0>;
++			native-mode = <&timing4>;
+ 
+ 			timing0: ETM0700G0EDH6 {
+ 				clock-frequency = <33264000>;
+@@ -100,6 +100,21 @@
+ 				de-active = <1>;
+ 				pixelclk-active = <1>;
+ 			};
++			timing4: TM2306DA070L {
++				clock-frequency = <48000000>;
++				hactive = <800>;
++				vactive = <480>;
++				hfront-porch = <210>;
++				hback-porch = <46>;
++				hsync-len = <0>;
++				vfront-porch = <23>;
++				vback-porch = <22>;
++				vsync-len = <0>;
++				hsync-active = <0>;
++				vsync-active = <0>;
++				de-active = <1>;
++				pixelclk-active = <0>;
++			};
+ 		};
+ 	};
+ };
+@@ -111,16 +126,20 @@
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&pinctrl_edt_ft5x06>;
+ 		interrupt-parent = <&gpio5>;
+-		interrupts = <5 IRQ_TYPE_EDGE_FALLING>;
++		interrupts = <9 IRQ_TYPE_EDGE_FALLING>;
++        poll-interval = <10>;
++        touchscreen-size-y = <480>;
++        touchscreen-size-x = <800>;
+ 		wakeup-source;
+-		status = "disabled";
++		status = "okay";
+ 	};
+ };
+ 
+ &iomuxc {
+ 	pinctrl_edt_ft5x06: edtft5x06grp {
+ 		fsl,pins = <
+-			MX6UL_PAD_SNVS_TAMPER5__GPIO5_IO05	0x1b0b0
++			//MX6UL_PAD_SNVS_TAMPER5__GPIO5_IO05	0x1b0b0
++            MX6UL_PAD_SNVS_TAMPER9__GPIO5_IO09  0x1b0b0
+ 		>;
+ 	};
+ 
+-- 
+2.17.1
+
