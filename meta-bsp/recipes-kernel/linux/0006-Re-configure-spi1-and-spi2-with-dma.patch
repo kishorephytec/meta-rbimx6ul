@@ -1,0 +1,99 @@
+From cb8f3ab98be758d4c5ee69a95596ede8530f3eb3 Mon Sep 17 00:00:00 2001
+From: khaleel <khaleel.s@phytec.in>
+Date: Thu, 2 Mar 2023 19:29:11 +0530
+Subject: [PATCH 9/9] Re-configure spi1 and spi2 with dma
+
+Signed-off-by: khaleel <khaleel.s@phytec.in>
+---
+ .../arm/boot/dts/imx6ul-phytec-ruggedboard-rdk.dts |  4 +-
+ arch/arm/boot/dts/imx6ul-phytec-ruggedboard.dtsi   | 54 ++++++++++++----------
+ 2 files changed, 32 insertions(+), 26 deletions(-)
+
+diff --git a/arch/arm/boot/dts/imx6ul-phytec-ruggedboard-rdk.dts b/arch/arm/boot/dts/imx6ul-phytec-ruggedboard-rdk.dts
+index d6d36bb..6aabbd0 100644
+--- a/arch/arm/boot/dts/imx6ul-phytec-ruggedboard-rdk.dts
++++ b/arch/arm/boot/dts/imx6ul-phytec-ruggedboard-rdk.dts
+@@ -81,11 +81,11 @@
+ 	status = "okay";
+ };
+ 
+-&ecspi2 {
++&ecspi1 {
+ 	status = "okay";
+ };
+ 
+-&ecspi3 {
++&ecspi2 {
+ 	status = "okay";
+ };
+ 
+diff --git a/arch/arm/boot/dts/imx6ul-phytec-ruggedboard.dtsi b/arch/arm/boot/dts/imx6ul-phytec-ruggedboard.dtsi
+index a2adfc1..7c8dcb4 100644
+--- a/arch/arm/boot/dts/imx6ul-phytec-ruggedboard.dtsi
++++ b/arch/arm/boot/dts/imx6ul-phytec-ruggedboard.dtsi
+@@ -162,32 +162,38 @@
+ 	num-channels = <4>;
+ };
+ 
+-&ecspi2 {						/* SPI1 Communication on the Expansion */
+-	fsl,spi-num-chipselects = <1>;
+-	cs-gpios = <&gpio4 22 GPIO_ACTIVE_LOW>;
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_ecspi2>;
+-	status = "okay";
+-
+-	spidev2: spi@0 {
+-	compatible = "rohm,dh2228fv";
+-	reg = <0>;
+-		spi-max-frequency = <50000000>;
+-	};
++&ecspi2 {                                               /* SPI1 Communication on the Expansion */
++        pinctrl-names = "default";
++        pinctrl-0 = <&pinctrl_ecspi2>;
++        cs-gpios = <&gpio4 22 GPIO_ACTIVE_LOW>;
++        dmas = <&sdma 5 7 1>,
++               <&sdma 6 7 2>;
++        dma-names = "rx", "tx";
++        status = "disabled";
++
++        spidev1: spi@0 {
++                compatible = "spidev";
++                reg = <0>;
++                spi-max-frequency = <50000000>;
++                status = "okay";
++        };
+ };
+ 
+-&ecspi1{							/* SPI0 Communication on the Expansion */
+-	fsl,spi-num-chipselects = <1>;
+-	cs-gpios = <&gpio4 26 GPIO_ACTIVE_LOW>;
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&pinctrl_ecspi1>;
+-	status = "okay";
+-
+-	spidev1: spi@0 {
+-		compatible = "rohm,dh2228fv";
+-		reg = <0>;
+-		spi-max-frequency = <50000000>;
+-	};
++&ecspi1{                                                        /* SPI0 Communication on the Expansion */
++        pinctrl-names = "default";
++        pinctrl-0 = <&pinctrl_ecspi1>;
++        cs-gpios = <&gpio4 26 GPIO_ACTIVE_LOW>;
++        dmas = <&sdma 3 7 1>,
++                <&sdma 4 7 2>;
++        dma-names = "rx", "tx";
++        status = "disabled";
++
++        spidev0: spi@0 {
++                compatible = "spidev";
++                reg = <0>;
++                spi-max-frequency = <50000000>;
++                status = "okay";
++        };
+ };
+ 
+ &iomuxc {
+-- 
+2.7.4
+
