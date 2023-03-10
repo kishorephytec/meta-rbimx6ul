@@ -41,7 +41,7 @@ Step-1: Download the meta layer for RB-i.MX6UL
     $ cd sources
     $ git clone https://github.com/kishorephytec/meta-rbimx6ul.git
 
-Step-2: Checkout the repective branch as per the dowloaded release of the yocto source setup. In the above case, we have downloaded "BSP-Yocto-i.MX6UL-PD19.1.0" release and hence "RB-PD19.1.0" branch has to be checkedout 
+Step-2: Checkout the repective branch as per the dowloaded release of the yocto source setup. In the above case, we have downloaded "BSP-Yocto-i.MX6UL-PD19.1.0" release and hence "RB-IMX6UL_PD19.1.0_1P2" branch has to be checkedout 
     $ cd meta-rbimx6ul/
     $ git checkout RB-IMX6UL_PD19.1.0_1P2
 
