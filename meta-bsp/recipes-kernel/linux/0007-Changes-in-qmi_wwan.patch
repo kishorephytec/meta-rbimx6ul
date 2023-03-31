@@ -1,0 +1,27 @@
+From 0f149b37868a4665775e6d4390a73916c4d871e6 Mon Sep 17 00:00:00 2001
+From: "mahitha.n@ruggedboard.com" <mahitha.n@ruggedboard.com>
+Date: Mon, 6 Jul 2020 13:31:29 +0530
+Subject: [PATCH 4/7] Changes in qmi_wwan
+
+Signed-off-by: = <mahitha.n@ruggedboard.com>
+---
+ drivers/net/usb/qmi_wwan.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+index 891f8f9..f423457b 100644
+--- a/drivers/net/usb/qmi_wwan.c
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -1192,7 +1192,8 @@ static const struct usb_device_id products[] = {
+ 	{QMI_FIXED_INTF(0x114f, 0x68a2, 8)},    /* Sierra Wireless MC7750 */
+ 	{QMI_FIXED_INTF(0x1199, 0x68a2, 8)},	/* Sierra Wireless MC7710 in QMI mode */
+ 	{QMI_FIXED_INTF(0x1199, 0x68a2, 19)},	/* Sierra Wireless MC7710 in QMI mode */
+-	{QMI_FIXED_INTF(0x1199, 0x68c0, 8)},	/* Sierra Wireless MC7304/MC7354 */
++//	{QMI_FIXED_INTF(0x1199, 0x68c0, 8)},	/* Sierra Wireless MC7304/MC7354 */
++	{QMI_QUIRK_SET_DTR(0x1199,0x68c0,8)},   /* Sierra Wireless WP7608 */
+ 	{QMI_FIXED_INTF(0x1199, 0x68c0, 10)},	/* Sierra Wireless MC7304/MC7354 */
+ 	{QMI_FIXED_INTF(0x1199, 0x901c, 8)},    /* Sierra Wireless EM7700 */
+ 	{QMI_FIXED_INTF(0x1199, 0x901f, 8)},    /* Sierra Wireless EM7355 */
+-- 
+2.7.4
+

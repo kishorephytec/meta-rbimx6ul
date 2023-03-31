@@ -1,0 +1,38 @@
+From 127184e41a8f16a044fe08824d093f24ae900499 Mon Sep 17 00:00:00 2001
+From: saikrishnagv53 <sai.k@phytec.in>
+Date: Thu, 30 Mar 2023 15:48:27 +0530
+Subject: [PATCH] Device Tree support for KD043WVFPA051-C030A lcd
+
+---
+ .../boot/dts/imx6ul-phytec-segin-peb-av-02.dtsi   | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/arch/arm/boot/dts/imx6ul-phytec-segin-peb-av-02.dtsi b/arch/arm/boot/dts/imx6ul-phytec-segin-peb-av-02.dtsi
+index 095b766d4eda..431ca8d476ad 100644
+--- a/arch/arm/boot/dts/imx6ul-phytec-segin-peb-av-02.dtsi
++++ b/arch/arm/boot/dts/imx6ul-phytec-segin-peb-av-02.dtsi
+@@ -130,6 +130,21 @@
+                 de-active = <1>;
+                 pixelclk-active = <0>;
+             };
++            timing6: KD043WVFPA051 {
++                clock-frequency = <33264000>;
++                hactive = <800>;
++                vactive = <480>;
++                hback-porch = <8>;
++                hsync-len = <4>;
++                hfront-porch = <8>;
++                vback-porch = <8>;
++                vsync-len = <4>;
++                vfront-porch = <8>;
++                hsync-active = <0>;
++                vsync-active = <0>;
++                de-active = <1>;
++                pixelclk-active = <0>;
++            };
+ 
+ 		};
+ 	};
+-- 
+2.17.1
+

@@ -1,0 +1,97 @@
+From b150e6011ff979f1eebac770130689345bfd221e Mon Sep 17 00:00:00 2001
+From: "tejashwani.b" <tejashwani.b@phytec.in>
+Date: Tue, 31 Aug 2021 12:48:13 +0530
+Subject: [PATCH 6/7] add support for ec200T module
+
+Signed-off-by: tejashwani.b <tejashwani.b@phytec.in>
+---
+ drivers/usb/serial/option.c   | 18 ++++++++++++++++++
+ drivers/usb/serial/usb_wwan.c |  8 ++++++++
+ 2 files changed, 26 insertions(+)
+
+diff --git a/drivers/usb/serial/option.c b/drivers/usb/serial/option.c
+index 8cdca3f..9f95079 100644
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -51,6 +51,7 @@ static void option_release(struct usb_serial *serial);
+ static void option_instat_callback(struct urb *urb);
+ 
+ /* Vendor and product IDs */
++#define N_OUT_URB 4 //Quectel 1
+ #define OPTION_VENDOR_ID			0x0AF0
+ #define OPTION_PRODUCT_COLT			0x5000
+ #define OPTION_PRODUCT_RICOLA			0x6000
+@@ -569,6 +570,8 @@ static void option_instat_callback(struct urb *urb);
+ 
+ 
+ static const struct usb_device_id option_ids[] = {
++	{ USB_DEVICE(0x2C7C, 0x6026) },
++	{ USB_DEVICE(0x2C7C, 0x6000) },
+ 	{ USB_DEVICE(OPTION_VENDOR_ID, OPTION_PRODUCT_COLT) },
+ 	{ USB_DEVICE(OPTION_VENDOR_ID, OPTION_PRODUCT_RICOLA) },
+ 	{ USB_DEVICE(OPTION_VENDOR_ID, OPTION_PRODUCT_RICOLA_LIGHT) },
+@@ -1969,6 +1972,9 @@ MODULE_DEVICE_TABLE(usb, option_ids);
+  * recognizes separately, thus num_port=1.
+  */
+ 
++/* Helper functions used by option_setup_urbs */
++
++
+ static struct usb_serial_driver option_1port_device = {
+ 	.driver = {
+ 		.owner =	THIS_MODULE,
+@@ -1995,6 +2001,9 @@ static struct usb_serial_driver option_1port_device = {
+ #ifdef CONFIG_PM
+ 	.suspend           = usb_wwan_suspend,
+ 	.resume            = usb_wwan_resume,
++#if 1 //Added by Quectel
++	.reset_resume = usb_wwan_resume,
++#endif
+ #endif
+ };
+ 
+@@ -2012,6 +2021,15 @@ static int option_probe(struct usb_serial *serial,
+ 	struct usb_device_descriptor *dev_desc = &serial->dev->descriptor;
+ 	unsigned long device_flags = id->driver_info;
+ 
++	#if 1 //Added by Quectel
++	if (serial->dev->descriptor.idVendor == cpu_to_le16(0x2C7C)) {
++	__u16 idProduct = le16_to_cpu(serial->dev->descriptor.idProduct);
++	//Quectel EC200T's interface 0 can be used as USB Network device (ecm, rndis)
++	if (serial->interface->cur_altsetting->desc.bInterfaceClass != 0xFF)
++	return -ENODEV;
++	}
++	#endif
++
+ 	/* Never bind to the CD-Rom emulation interface	*/
+ 	if (iface_desc->bInterfaceClass == 0x08)
+ 		return -ENODEV;
+diff --git a/drivers/usb/serial/usb_wwan.c b/drivers/usb/serial/usb_wwan.c
+index 59bfcb3..0cac5f0 100644
+--- a/drivers/usb/serial/usb_wwan.c
++++ b/drivers/usb/serial/usb_wwan.c
+@@ -40,6 +40,7 @@
+  * Generate DTR/RTS signals on the port using the SET_CONTROL_LINE_STATE request
+  * in CDC ACM.
+  */
++
+ static int usb_wwan_send_setup(struct usb_serial_port *port)
+ {
+ 	struct usb_serial *serial = port->serial;
+@@ -501,6 +502,13 @@ static struct urb *usb_wwan_setup_urb(struct usb_serial_port *port,
+ 	usb_fill_bulk_urb(urb, serial->dev,
+ 			  usb_sndbulkpipe(serial->dev, endpoint) | dir,
+ 			  buf, len, callback, ctx);
++	#if 1 //Added by Quectel for zero packet
++	if (dir == USB_DIR_OUT) {
++	struct usb_device_descriptor *desc = &serial->dev->descriptor;
++	if (desc->idVendor == cpu_to_le16(0x2C7C))
++	urb->transfer_flags |= URB_ZERO_PACKET;
++	}
++	#endif
+ 
+ 	return urb;
+ }
+-- 
+2.7.4
+
